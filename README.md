@@ -71,6 +71,14 @@ uvicorn levy.api.main:app --reload
 
 ## API endpoints
 
+Public UI integration (outside the `/api` prefix):
+
+- `GET /v1/snapshot` — the full `LevySnapshot` contract consumed by the
+  frontend (`LEVY_UI/src/lib/levy-source.server.ts`): camelCase `questions`,
+  `replay`, `calibration`, `resolved`, `brierScore`, `source="atlas"`, plus an
+  optional dynamic `stats` object. Ensure the frontend origin is present in
+  `LEVY_CORS_ORIGINS` so browser requests are not blocked.
+
 Read:
 
 - `GET /health`, `GET /api/health`

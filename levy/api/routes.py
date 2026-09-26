@@ -14,6 +14,7 @@ from levy.agents.replay import SCENARIOS, ReplayEngine
 from levy.agents.resolution import ResolutionClerk
 from levy.agents.status import agents_status, desk_stats
 from levy.api.deps import bus_dep, repo_dep
+from levy.api.snapshot import parse_since
 from levy.api.sse import event_stream
 from levy.core.calibrate import model_from_doc
 from levy.core.collections import (
@@ -114,8 +115,11 @@ async def evidence_feed(
     since: Optional[str] = Query(default=None), repo: Repository = Depends(repo_dep)
 ) -> dict[str, Any]:
     flt: dict[str, Any] = {}
-    if since:
-        flt = {"published_at": {"$gt": since}}
+    since_dt = parse_since(since)
+    if since_dt is not None:
+        # Atlas stores BSON datetimes, so compare against a timezone-aware
+        # datetime rather than the raw ISO string.
+        flt = {"published_at": {"$gt": since_dt}}
     items = await repo.find(EVIDENCE, flt, sort=[("published_at", -1)], limit=100)
     return {"evidence": items, "since": since}
 

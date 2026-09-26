@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from levy.api.routes import router
+from levy.api.snapshot import router as snapshot_router
 from levy.core.db import get_repository, set_repository
 from levy.core.events import get_event_bus
 from levy.settings import get_settings
@@ -45,6 +46,8 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(router)
+    # Public UI integration API, mounted outside the /api prefix.
+    app.include_router(snapshot_router)
 
     @app.get("/health")
     async def health() -> dict[str, str]:
