@@ -1,9 +1,71 @@
-# LEVY — Long-Horizon Tariff Agent Desk (backend)
+# LEVY — Long-Horizon Tariff Agent Desk
 
 LEVY is a standing desk of AI agents that watches the U.S. tariff pipeline,
 remembers what it believed and why, and publishes calibrated tariff
-probabilities with confidence grades (A–D) per country. This repository contains
-the **backend only** (agent runtime + FastAPI gateway). No UI.
+probabilities with confidence grades (A–D) per country. This repository is a
+**monorepo** containing the backend agent runtime and the web UI.
+
+## Monorepo layout
+
+```
+.
+├── levy/           FastAPI gateway + agent runtime (Python, backend)
+├── web/            LEVY UI (TanStack Start + React, frontend)
+├── docs/           Atlas sandbox + design docs
+├── pyproject.toml  backend package + dependency pins
+└── README.md       you are here
+```
+
+- **`levy/` (backend):** the agent runtime and FastAPI gateway. Serves
+  `GET /v1/snapshot` and `GET /api/stream` (SSE) that the UI consumes. All
+  MongoDB Atlas and model credentials live here, backend-only, read from the
+  environment (prefix `LEVY_`). They are **never** shipped to the browser.
+- **`web/` (frontend):** the UI. Talks to the backend over HTTP/SSE. It only
+  ever needs plain public URLs (e.g. `http://localhost:8000`) — never a secret.
+
+## Running the full stack locally
+
+Two processes: FastAPI on `:8000` and the UI dev server on `:5173`.
+
+### 1. Backend — FastAPI on :8000
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+cp .env.example .env          # LEVY_OFFLINE=true works with no credentials
+uvicorn levy.api.main:app --reload --port 8000
+```
+
+`.env` (root) is git-ignored and holds backend-only settings. In offline mode
+(`LEVY_OFFLINE=true`, the default) no MongoDB or API keys are required. Atlas
+and model credentials (`LEVY_MONGO_URI`, `LEVY_OPENROUTER_API_KEY`, etc.) stay
+**backend-only** — they belong in the root `.env`, never in `web/`.
+
+### 2. Frontend — UI on :5173
+
+```bash
+cd web
+bun install                   # bun.lock is the source of truth
+cp web/.env.example web/.env  # (or: cd web && cp .env.example .env)
+bun run dev                   # Vite dev server on http://localhost:5173
+```
+
+The UI's `web/.env` only holds plain public URLs pointing at the backend
+(`LEVY_API_URL` / `VITE_LEVY_API_URL` = `http://localhost:8000`). `web/.env.example`
+is a placeholder-only template — never put an Atlas URI or model key there, as
+`VITE_`-prefixed values are exposed to the browser bundle.
+
+Ensure the UI origin (`http://localhost:5173`) is included in the backend's
+`LEVY_CORS_ORIGINS` so browser requests to `/v1/snapshot` and `/api/stream` are
+allowed. Without a running backend the UI falls back to a built-in demo snapshot.
+
+See [`web/README.md`](web/README.md) for the full UI documentation.
+
+---
+
+## Backend details
+
+This repository contains the **backend** (agent runtime + FastAPI gateway).
 
 The backend runs in two modes:
 
