@@ -33,8 +33,13 @@ class QuestionFactory:
         action = evidence.get("direction", "action")
         key = make_key(country, authority, action)
 
-        if await self.repo.find_one(QUESTIONS, {"key": key}):
-            return None
+        existing = await self.repo.find_one(QUESTIONS, {"key": key})
+        if existing is not None:
+            # A deterministic draft/active question already exists for this
+            # key. Link the evidence to it (idempotently) and return it rather
+            # than leaving the evidence unlinked.
+            await self._link_evidence(evidence.get("_id"), existing.get("_id"))
+            return Question(**existing)
 
         prompt = (
             f"Draft a binary forecast question for country={country}, "
@@ -57,9 +62,26 @@ class QuestionFactory:
         try:
             await self.repo.insert(QUESTIONS, question.to_doc())
         except DuplicateKeyError:
-            return None
+            # Raced with a concurrent create for the same key: load and link the
+            # winner so the evidence is never left unlinked.
+            winner = await self.repo.find_one(QUESTIONS, {"key": key})
+            if winner is None:
+                return None
+            await self._link_evidence(evidence.get("_id"), winner.get("_id"))
+            return Question(**winner)
         # Link the evidence to the new question.
-        await self.repo.update_one(
-            "evidence", {"_id": evidence.get("_id")}, {"$push": {"question_ids": question.id}}
-        )
+        await self._link_evidence(evidence.get("_id"), question.id)
         return question
+
+    async def _link_evidence(self, evidence_id: Any, question_id: Any) -> None:
+        """Idempotently link an evidence document to a question.
+
+        Uses ``$addToSet`` so re-runs never create duplicate ``question_ids``.
+        """
+        if evidence_id is None or question_id is None:
+            return
+        await self.repo.update_one(
+            "evidence",
+            {"_id": evidence_id},
+            {"$addToSet": {"question_ids": question_id}},
+        )

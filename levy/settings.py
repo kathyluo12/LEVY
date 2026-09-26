@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -47,6 +48,24 @@ class Settings(BaseSettings):
 
     # Seed
     seed_on_start: bool = False
+
+    # --- Federal Register live ingestion ---------------------------------
+    # Public API, no key required. The client identifies itself with a
+    # descriptive User-Agent that includes a configurable contact string so the
+    # Federal Register team can reach the operator if needed.
+    federal_register_base_url: str = "https://www.federalregister.gov"
+    federal_register_user_agent: str = "LEVY-TariffDesk/1.0"
+    federal_register_contact: str = "levy-ops@example.com"
+    federal_register_query: str = "tariff"
+    # Network resilience for the Federal Register client.
+    federal_register_timeout_seconds: float = Field(default=20.0, ge=1.0, le=120.0)
+    federal_register_max_retries: int = Field(default=3, ge=0, le=8)
+
+    # --- register_scout scheduled run defaults ---------------------------
+    # Small, safe defaults for the recurring in-process scheduled ingestion.
+    register_scout_lookback_days: int = Field(default=2, ge=1, le=30)
+    register_scout_max_documents: int = Field(default=50, ge=1, le=500)
+    register_scout_run_on_start: bool = True
 
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]

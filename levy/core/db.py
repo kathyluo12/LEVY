@@ -144,6 +144,18 @@ class InMemoryRepository:
             if "$push" in update:
                 for k, v in update["$push"].items():
                     doc.setdefault(k, []).append(v)
+            if "$addToSet" in update:
+                # Mongo semantics: append only if not already present. Supports
+                # the ``$each`` modifier for adding multiple distinct values.
+                for k, v in update["$addToSet"].items():
+                    arr = doc.setdefault(k, [])
+                    if isinstance(v, dict) and "$each" in v:
+                        values = v["$each"]
+                    else:
+                        values = [v]
+                    for item in values:
+                        if item not in arr:
+                            arr.append(item)
         else:
             doc = copy.deepcopy(update)
         return doc
@@ -350,7 +362,12 @@ class MongoRepository:
 
     async def insert(self, coll: str, doc: dict[str, Any]) -> dict[str, Any]:
         db = self._ensure_client()
-        await db[coll].insert_one(copy.deepcopy(doc))
+        from pymongo.errors import DuplicateKeyError as PyMongoDuplicateKeyError
+
+        try:
+            await db[coll].insert_one(copy.deepcopy(doc))
+        except PyMongoDuplicateKeyError as exc:
+            raise DuplicateKeyError(f"duplicate key in {coll}") from exc
         return doc
 
     async def find_one(self, coll: str, flt: dict[str, Any]) -> Optional[dict[str, Any]]:

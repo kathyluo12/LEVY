@@ -78,3 +78,24 @@ async def test_llm_offline_json_and_budget(settings):
 def test_budget_would_exceed():
     b = BudgetTracker(limit_usd=0.001)
     assert b.would_exceed(0.002) is True
+
+
+@pytest.mark.asyncio
+async def test_mongo_repository_translates_duplicate_key():
+    from pymongo.errors import DuplicateKeyError as PyMongoDuplicateKeyError
+
+    from levy.core.db import MongoRepository
+
+    class Collection:
+        async def insert_one(self, _doc):
+            raise PyMongoDuplicateKeyError("duplicate")
+
+    class Database:
+        def __getitem__(self, _name):
+            return Collection()
+
+    repo = MongoRepository("mongodb://unused", "levy")
+    repo._client = object()
+    repo._db = Database()
+    with pytest.raises(DuplicateKeyError):
+        await repo.insert("raw_items", {"hash": "same"})

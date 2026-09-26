@@ -93,6 +93,10 @@ class RawItem(LevyModel):
     title: str = ""
     text: str = ""
     hash: str = ""
+    # Optional source-specific structured metadata (e.g. Federal Register
+    # document_number, agencies, type, pdf_url, topics, effective_on). Defaults
+    # to an empty dict so all existing callers remain compatible.
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class Classification(LevyModel):

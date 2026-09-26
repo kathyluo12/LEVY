@@ -67,6 +67,7 @@ class ScoutService:
             hash=h,
             published_at=_coerce_dt(published),
             fetched_at=datetime.now(timezone.utc),
+            metadata=doc.get("metadata") or {},
         )
         try:
             await self.repo.insert(RAW_ITEMS, item.to_doc())

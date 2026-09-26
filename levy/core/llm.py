@@ -13,8 +13,11 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import logging
 from dataclasses import dataclass
 from typing import Any, Optional
+
+log = logging.getLogger("levy.llm")
 
 # Role -> model routing table (2-3 different providers as per the TDD).
 ROLE_MODELS: dict[str, str] = {
@@ -136,10 +139,18 @@ class LLMClient:
     http_client: Any = None
     offline: bool = True
     max_retries: int = 3
+    api_key: str = ""
+    base_url: str = "https://openrouter.ai"
 
     def __post_init__(self) -> None:
         if self.settings is not None:
             self.offline = self.settings.offline
+            self.api_key = self.settings.openrouter_api_key
+            self.base_url = self.settings.openrouter_base_url
+
+    @property
+    def _has_key(self) -> bool:
+        return bool(self.api_key)
 
     def model_for(self, role: str) -> str:
         return ROLE_MODELS.get(role, "openai/gpt-4o-mini")
@@ -156,7 +167,10 @@ class LLMClient:
         model = self.model_for(role)
         tin = _est_tokens(system + prompt)
 
-        if self.offline:
+        # Offline, or online without a provider key: return a deterministic
+        # offline response instead of attempting a network call. The response is
+        # honestly flagged ``offline=True`` in both cases.
+        if self.offline or not self._has_key:
             content = offline_json_response(role, prompt, schema)
             text = json.dumps(content)
             tout = _est_tokens(text)
@@ -184,7 +198,26 @@ class LLMClient:
             except Exception as exc:  # noqa: BLE001
                 last_exc = exc
                 await asyncio.sleep(min(2**attempt * 0.1, 2.0))
-        raise RuntimeError(f"LLM call failed after {self.max_retries} retries: {last_exc}")
+
+        # All bounded provider attempts failed (e.g. persistent HTTP 400 or
+        # timeouts). Rather than raising and aborting a partially-persisted
+        # pipeline run, degrade gracefully to a deterministic offline response
+        # flagged ``offline=True``. We log a warning with the role, model and
+        # error *type* only — never the API key or request/response payload.
+        log.warning(
+            "LLM call for role=%s model=%s failed after %d attempts (%s); "
+            "returning deterministic offline fallback",
+            role,
+            model,
+            self.max_retries,
+            type(last_exc).__name__,
+        )
+        content = offline_json_response(role, prompt, schema)
+        text = json.dumps(content)
+        tout = _est_tokens(text)
+        cost = self._cost(model, tin, tout)
+        self._charge_budget(budget, cost, tin, tout)
+        return LLMResponse(content, text, model, tin, tout, cost, offline=True)
 
     def _charge_budget(self, budget, cost, tin, tout) -> None:
         if budget is not None:
@@ -200,13 +233,34 @@ class LLMClient:
         if client is None:
             import httpx
 
-            client = httpx.AsyncClient(base_url=self.settings.openrouter_base_url, timeout=30.0)
+            client = httpx.AsyncClient(base_url=self.base_url, timeout=30.0)
             close = True
         try:
             messages = []
             if system:
                 messages.append({"role": "system", "content": system})
             messages.append({"role": "user", "content": prompt})
+            # --- OpenRouter Chat Completions adapter contract -------------
+            # Endpoint (canonical): POST https://openrouter.ai/api/v1/chat/completions
+            #   base_url = "https://openrouter.ai"; path = "/api/v1/chat/completions".
+            # Auth:    Authorization: Bearer <OPENROUTER_API_KEY>
+            # Headers: Content-Type: application/json (set automatically by httpx
+            #          for ``json=``). HTTP-Referer / X-Title are optional
+            #          attribution headers OpenRouter recommends but does not
+            #          require; sent here as best-effort identification.
+            # Body:    {"model": <str>, "messages": [{role, content}...],
+            #           "response_format": {"type": "json_object"}}.
+            # NOTE on HTTP 400: ``response_format`` is *not* honored by every
+            #   upstream provider/model routed through OpenRouter. Some return
+            #   400 ("unsupported parameter" / "wrong_api_format") when it is
+            #   present. We still request JSON output because most routed models
+            #   support it and ``_parse_json`` tolerates non-JSON text, but the
+            #   authoritative safety net is the bounded-retry -> deterministic
+            #   offline fallback in ``chat_json`` (never raises to the pipeline).
+            #   Model IDs in ``ROLE_MODELS`` are the other 400 risk (a renamed
+            #   or deprecated slug 404/400s); fixing those is intentionally out
+            #   of scope here — correctness relies on the fallback, not on any
+            #   particular model ID being currently valid.
             resp = await client.post(
                 "/api/v1/chat/completions",
                 json={
@@ -214,7 +268,11 @@ class LLMClient:
                     "messages": messages,
                     "response_format": {"type": "json_object"},
                 },
-                headers={"Authorization": f"Bearer {self.settings.openrouter_api_key}"},
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "HTTP-Referer": "https://github.com/levy-tariff-desk",
+                    "X-Title": "LEVY Tariff Desk",
+                },
             )
             resp.raise_for_status()
             return resp.json()

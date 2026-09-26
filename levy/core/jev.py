@@ -230,14 +230,22 @@ class JevAdapter:
     http_client: Any = None  # injectable httpx.AsyncClient for tests
     offline: bool = True
     model: str = JEV_MODEL
+    api_key: str = ""
+    base_url: str = "https://openrouter.ai"
 
     def __post_init__(self) -> None:
         if self.settings is not None:
             self.offline = self.settings.offline
             self.timeout_seconds = self.settings.jev_timeout_seconds
             self.model = self.settings.jev_model
+            self.api_key = self.settings.openrouter_api_key
+            self.base_url = self.settings.openrouter_base_url
         if self.fallback is None:
             self.fallback = _default_fallback
+
+    @property
+    def _has_key(self) -> bool:
+        return bool(self.api_key)
 
     async def decide(self, state: dict[str, Any], questions: dict[str, Any]) -> JevResult:
         """Ask Jev all questions for one item. Returns normalized + raw answers."""
@@ -246,6 +254,14 @@ class JevAdapter:
         if self.offline:
             raw = offline_classify(state, questions)
             return self._finalize(raw, state, questions, "offline", start)
+
+        # Atlas/online mode but no provider key: use deterministic fallback
+        # rather than attempting a network call that would fail. Label the
+        # classifier honestly as "fallback".
+        if not self._has_key:
+            fallback = self.fallback or _default_fallback
+            raw = await fallback(state, questions)
+            return self._finalize(raw, state, questions, "fallback", start)
 
         try:
             raw = await asyncio.wait_for(
@@ -285,13 +301,13 @@ class JevAdapter:
         if client is None:
             import httpx  # lazy import
 
-            client = httpx.AsyncClient(base_url=self.settings.openrouter_base_url)
+            client = httpx.AsyncClient(base_url=self.base_url)
             close_client = True
         try:
             resp = await client.post(
                 JEV_ENDPOINT_PATH,
                 json={"model": self.model, "state": state, "questions": questions},
-                headers={"Authorization": f"Bearer {self.settings.openrouter_api_key}"},
+                headers={"Authorization": f"Bearer {self.api_key}"},
             )
             resp.raise_for_status()
             data = resp.json()

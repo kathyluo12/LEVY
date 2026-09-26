@@ -107,6 +107,8 @@ Key settings:
 | `LEVY_FIRECRAWL_API_KEY` / `LEVY_TAVILY_API_KEY` | Web research |
 | `LEVY_CORS_ORIGINS` | Comma-separated allowed origins |
 | `LEVY_SEED_ON_START` | Seed fixtures during API startup |
+| `LEVY_FEDERAL_REGISTER_*` | Live Federal Register ingestion (see [`docs/LIVE_INGESTION.md`](docs/LIVE_INGESTION.md)) |
+| `LEVY_REGISTER_SCOUT_*` | Scheduled register scout lookback / caps / run-on-start |
 
 ## Atlas sandbox
 
@@ -122,7 +124,24 @@ levy-seed      # idempotent seed of questions/events/exposures/ticks
 levy-api       # FastAPI gateway (uvicorn)
 levy-scouts    # APScheduler scout worker
 levy-agents    # leased-job consumer running the forecast pipeline
+levy-register  # fetch/process live Federal Register tariff documents
 ```
+
+### Live Federal Register ingestion
+
+`levy-register` fetches live tariff/trade documents from the public Federal
+Register API (no key). It supports dry-run (zero DB writes), ingest-only
+(raw items only), and full-pipeline modes with bounded page/document caps and a
+documented tariff prefilter. See [`docs/LIVE_INGESTION.md`](docs/LIVE_INGESTION.md).
+
+```bash
+# Dry-run: fetch + prefilter only, no database writes.
+levy-register --days 7 --dry-run --json
+```
+
+The `register_scout` scheduled tick runs the same ingestion in production over a
+small lookback window; in offline mode it logs a heartbeat and makes no network
+call.
 
 Or directly, e.g.:
 

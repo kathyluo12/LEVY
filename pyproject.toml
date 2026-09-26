@@ -40,6 +40,7 @@ dev = [
 levy-api = "levy.workers.api:main"
 levy-scouts = "levy.workers.scouts:main"
 levy-agents = "levy.workers.agents:main"
+levy-register = "levy.workers.register:main"
 levy-seed = "levy.seed:main"
 
 [tool.setuptools.packages.find]
