@@ -1,0 +1,45 @@
+{
+  "scenario": "section_122_expiry",
+  "question": {
+    "key": "CAN-S122-EXPIRY",
+    "text": "Will the Section 122 measure affecting Canada expire on schedule by 2026-09-15?",
+    "country": "CAN",
+    "authority": "s122",
+    "resolution_source": "https://www.federalregister.gov"
+  },
+  "documents": [
+    {
+      "hash": "s122-1",
+      "title": "Section 122 balance-of-payments tariff set with 150-day statutory limit",
+      "text": "A Section 122 tariff measure is imposed with a statutory 150-day expiry unless Congress acts to extend it.",
+      "url": "https://federalregister.gov/s122-1",
+      "published_at": "2026-08-01T00:00:00Z"
+    },
+    {
+      "hash": "s122-2",
+      "title": "Congress shows no appetite to extend Section 122 measure",
+      "text": "Hill sources indicate the Section 122 tariff extension lacks votes; the measure is likely to expire on schedule.",
+      "url": "https://congress.gov/s122-2",
+      "published_at": "2026-08-20T00:00:00Z"
+    },
+    {
+      "hash": "s122-3",
+      "title": "Administration signals it will let Section 122 lapse",
+      "text": "Officials say the Section 122 measure will be allowed to lapse at its statutory deadline, a de-escalation.",
+      "url": "https://whitehouse.gov/s122-3",
+      "published_at": "2026-09-05T00:00:00Z"
+    },
+    {
+      "hash": "s122-4",
+      "title": "Federal Register: Section 122 measure expired",
+      "text": "The Section 122 tariff measure affecting Canada expired on schedule without extension.",
+      "url": "https://federalregister.gov/s122-4",
+      "published_at": "2026-09-15T00:00:00Z"
+    }
+  ],
+  "resolution": {
+    "outcome": "YES",
+    "source_url": "https://federalregister.gov/s122-4",
+    "resolved_at": "2026-09-15T00:00:00Z"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "scenario": "china_truce_extension",
+  "question": {
+    "key": "CHN-DEAL-TRUCE-EXT",
+    "text": "Will the U.S.-China tariff truce be extended past 2026-08-31?",
+    "country": "CHN",
+    "authority": "deal",
+    "resolution_source": "https://ustr.gov"
+  },
+  "documents": [
+    {
+      "hash": "chn-truce-1",
+      "title": "U.S.-China tariff truce nears expiry",
+      "text": "The existing U.S.-China tariff truce is set to expire on August 31; negotiators are discussing an extension of the trade agreement.",
+      "url": "https://ustr.gov/chn-truce-1",
+      "published_at": "2026-08-05T00:00:00Z"
+    },
+    {
+      "hash": "chn-truce-2",
+      "title": "MOFCOM statement signals constructive talks",
+      "text": "China's MOFCOM described talks as constructive and expressed intent to de-escalate and extend the tariff truce.",
+      "url": "https://mofcom.gov.cn/chn-truce-2",
+      "published_at": "2026-08-18T00:00:00Z"
+    },
+    {
+      "hash": "chn-truce-3",
+      "title": "Sticking points remain on enforcement",
+      "text": "Reports note unresolved enforcement issues that could delay any extension of the China tariff truce.",
+      "url": "https://ustr.gov/chn-truce-3",
+      "published_at": "2026-08-25T00:00:00Z"
+    },
+    {
+      "hash": "chn-truce-4",
+      "title": "USTR announces 90-day extension of U.S.-China tariff truce",
+      "text": "USTR announced a 90-day extension of the U.S.-China tariff truce, a de-escalation avoiding new tariffs.",
+      "url": "https://ustr.gov/chn-truce-4",
+      "published_at": "2026-08-30T00:00:00Z"
+    }
+  ],
+  "resolution": {
+    "outcome": "YES",
+    "source_url": "https://ustr.gov/chn-truce-4",
+    "resolved_at": "2026-08-31T00:00:00Z"
+  }
+}

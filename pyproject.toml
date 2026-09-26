@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools==75.6.0", "wheel==0.45.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "levy"
+version = "0.1.0"
+description = "LEVY — Long-Horizon Tariff Agent Desk (backend)"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Seraph Systems LLC" }]
+
+dependencies = [
+    "fastapi==0.115.6",
+    "uvicorn[standard]==0.34.0",
+    "pydantic==2.10.4",
+    "pydantic-settings==2.7.1",
+    "httpx==0.28.1",
+    "motor==3.6.0",
+    "pymongo==4.9.2",
+    "apscheduler==3.11.0",
+    "pyyaml==6.0.2",
+    "sse-starlette==2.2.1",
+    "python-dotenv==1.0.1",
+    "typing-extensions==4.12.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.3.4",
+    "pytest-asyncio==0.25.0",
+    "anyio==4.7.0",
+    "httpx==0.28.1",
+    "ruff==0.8.4",
+    "mypy==1.14.0",
+]
+
+[project.scripts]
+levy-api = "levy.workers.api:main"
+levy-scouts = "levy.workers.scouts:main"
+levy-agents = "levy.workers.agents:main"
+levy-seed = "levy.seed:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["levy*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["levy/tests"]
+addopts = "-q"
+
+[tool.mypy]
+ignore_missing_imports = true
+disable_error_code = ["import-untyped"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]

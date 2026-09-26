@@ -1,0 +1,52 @@
+{
+  "scenario": "canada_338",
+  "question": {
+    "key": "CAN-S338-REMOVE",
+    "text": "Will the U.S. remove the Section 338 tariff action on Canada by 2026-08-22?",
+    "country": "CAN",
+    "authority": "s338",
+    "resolution_source": "https://www.federalregister.gov"
+  },
+  "documents": [
+    {
+      "hash": "can338-1",
+      "title": "USTR announces Section 338 investigation into Canadian trade practices",
+      "text": "The U.S. Trade Representative today opened a Section 338 action concerning Canada tariffs and discriminatory duties on U.S. exports.",
+      "url": "https://ustr.gov/can338-1",
+      "published_at": "2026-07-20T12:00:00Z"
+    },
+    {
+      "hash": "can338-2",
+      "title": "Canada Finance signals willingness to negotiate on tariffs",
+      "text": "Canada's finance ministry indicated openness to a trade deal to de-escalate the Section 338 tariff dispute.",
+      "url": "https://fin.canada.ca/can338-2",
+      "published_at": "2026-07-28T09:00:00Z"
+    },
+    {
+      "hash": "can338-3",
+      "title": "Federal Register notice: Section 338 duties on Canada effective date set",
+      "text": "A Federal Register notice sets an effective date for Section 338 tariff duties on Canadian imports, with a named rate and sector list.",
+      "url": "https://federalregister.gov/can338-3",
+      "published_at": "2026-08-05T00:00:00Z"
+    },
+    {
+      "hash": "can338-4",
+      "title": "Reports of a framework deal to remove Section 338 tariffs",
+      "text": "Officials describe a framework agreement that would suspend and remove the Section 338 tariff action on Canada, a de-escalation.",
+      "url": "https://ustr.gov/can338-4",
+      "published_at": "2026-08-18T15:00:00Z"
+    },
+    {
+      "hash": "can338-5",
+      "title": "Federal Register: Section 338 action on Canada partially removed",
+      "text": "The Section 338 tariff measure affecting Canada is removed for most sectors following a trade agreement, a clear de-escalation.",
+      "url": "https://federalregister.gov/can338-5",
+      "published_at": "2026-08-22T00:00:00Z"
+    }
+  ],
+  "resolution": {
+    "outcome": "YES",
+    "source_url": "https://federalregister.gov/can338-5",
+    "resolved_at": "2026-08-22T00:00:00Z"
+  }
+}

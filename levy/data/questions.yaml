@@ -1,0 +1,160 @@
+# LEVY forecast questions (~20). Values are placeholders, not forecasts.
+- key: CHN-DEAL-TRUCE-EXT
+  text: Will the U.S.-China tariff truce be extended past its current expiry?
+  country: CHN
+  authority: deal
+  resolution_source: https://ustr.gov
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: CAN-S338-REMOVE
+  text: Will the U.S. remove the Section 338 tariff action on Canada in 2026 Q4?
+  country: CAN
+  authority: s338
+  resolution_source: https://www.federalregister.gov
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: EU-S232-CEILING
+  text: Will the EU steel/aluminum tariff ceiling deal hold through year end?
+  country: EU
+  authority: s232
+  resolution_source: https://ec.europa.eu
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: CHN-S301-CAPACITY
+  text: Will new Section 301 excess-capacity duties on China take effect?
+  country: CHN
+  authority: s301
+  resolution_source: https://ustr.gov
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: MEX-IEEPA-BORDER
+  text: Will IEEPA-based border tariffs on Mexico be imposed?
+  country: MEX
+  authority: ieepa
+  resolution_source: https://www.whitehouse.gov
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: CAN-S232-AUTOS
+  text: Will Section 232 auto tariffs be applied to Canadian imports?
+  country: CAN
+  authority: s232
+  resolution_source: https://www.commerce.gov
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: CHN-COURT-IEEPA
+  text: Will courts strike down the IEEPA tariff authority as applied to China?
+  country: CHN
+  authority: court
+  resolution_source: https://www.cit.uscourts.gov
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: KOR-DEAL-RENEW
+  text: Will the Korea trade arrangement be renewed without new tariffs?
+  country: KOR
+  authority: deal
+  resolution_source: https://ustr.gov
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: JPN-S232-STEEL
+  text: Will Japan face renewed Section 232 steel tariffs?
+  country: JPN
+  authority: s232
+  resolution_source: https://www.commerce.gov
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: EU-DEAL-DIGITAL
+  text: Will an EU digital-trade tariff dispute escalate to new duties?
+  country: EU
+  authority: deal
+  resolution_source: https://ec.europa.eu
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: CHN-S122-BALANCE
+  text: Will Section 122 balance-of-payments tariffs be invoked against China?
+  country: CHN
+  authority: s122
+  resolution_source: https://www.federalregister.gov
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: CAN-S122-EXPIRY
+  text: Will the Section 122 measure affecting Canada expire on schedule?
+  country: CAN
+  authority: s122
+  resolution_source: https://www.federalregister.gov
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: MEX-S232-AUTOS
+  text: Will Section 232 auto tariffs extend to Mexican imports?
+  country: MEX
+  authority: s232
+  resolution_source: https://www.commerce.gov
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: CHN-S301-SEMI
+  text: Will Section 301 duties expand to Chinese semiconductors?
+  country: CHN
+  authority: s301
+  resolution_source: https://ustr.gov
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: EU-S232-EXTEND
+  text: Will Section 232 tariffs on the EU be extended into next year?
+  country: EU
+  authority: s232
+  resolution_source: https://www.commerce.gov
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: CAN-DEAL-USMCA
+  text: Will a USMCA-adjacent side deal avert new Canada tariffs?
+  country: CAN
+  authority: deal
+  resolution_source: https://ustr.gov
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: CHN-DEAL-PHASE3
+  text: Will a Phase-3 U.S.-China agreement reduce existing tariffs?
+  country: CHN
+  authority: deal
+  resolution_source: https://ustr.gov
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: KOR-S232-STEEL
+  text: Will Korea's Section 232 steel quota be converted to tariffs?
+  country: KOR
+  authority: s232
+  resolution_source: https://www.commerce.gov
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: JPN-DEAL-AUTOS
+  text: Will Japan negotiate an auto-tariff exemption?
+  country: JPN
+  authority: deal
+  resolution_source: https://ustr.gov
+  outcomes: ["YES", "NO"]
+  status: active
+
+- key: MEX-DEAL-MIGRATION
+  text: Will a migration deal remove threatened Mexico tariffs?
+  country: MEX
+  authority: deal
+  resolution_source: https://www.whitehouse.gov
+  outcomes: ["YES", "NO"]
+  status: active
