@@ -46,6 +46,11 @@ Key settings:
 | `LEVY_CORS_ORIGINS` | Comma-separated allowed origins |
 | `LEVY_SEED_ON_START` | Seed fixtures during API startup |
 
+## Atlas sandbox
+
+The verified hackathon sandbox setup, validation evidence, and deployment
+checklist are documented in [`docs/ATLAS_SANDBOX.md`](docs/ATLAS_SANDBOX.md).
+
 ## Run
 
 Console scripts are declared in `pyproject.toml`:

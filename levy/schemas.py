@@ -1,7 +1,8 @@
 """Pydantic domain schemas for all core LEVY documents.
 
-Every model uses stable JSON serialization: datetimes are serialized to
-RFC3339 UTC strings via :func:`iso_now` and ``model_dump(mode="json")``.
+Models serialize to BSON-friendly Python dictionaries for persistence. Datetime
+objects remain native ``datetime`` values so MongoDB time-series and TTL indexes
+work correctly; FastAPI handles conversion to RFC3339 strings at the API edge.
 Documents carry a string ``_id`` (aliased to ``id``) so the same shapes work
 in both MongoDB and the in-memory repository.
 """
@@ -34,8 +35,8 @@ class LevyModel(BaseModel):
     )
 
     def to_doc(self) -> dict[str, Any]:
-        """Serialize to a JSON-safe dict suitable for storage/transport."""
-        return self.model_dump(mode="json", by_alias=True, exclude_none=False)
+        """Serialize to a BSON-friendly dict suitable for persistence."""
+        return self.model_dump(mode="python", by_alias=True, exclude_none=False)
 
 
 # --- Enums -----------------------------------------------------------------
